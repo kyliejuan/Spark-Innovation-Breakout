@@ -1,0 +1,31 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_breast_cancer
+
+# Load dataset
+data = load_breast_cancer()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df['target'] = data.target
+df['diagnosis'] = df['target'].map({0: 'Malignant', 1: 'Benign'})
+
+# Title
+st.title("Breast Cancer Case Analysis")
+
+# Show dataset
+st.subheader("Raw Data Sample")
+st.dataframe(df.head())
+
+# Feature comparison
+st.subheader("Mean Feature Comparison")
+selected_feature = st.selectbox("Select Feature", data.feature_names)
+
+# Calculate mean for each diagnosis
+mean_vals = df.groupby('diagnosis')[selected_feature].mean()
+
+# Plot
+fig, ax = plt.subplots()
+mean_vals.plot(kind='bar', ax=ax, color=['red', 'green'])
+ax.set_ylabel(f"Mean {selected_feature}")
+ax.set_title(f"Mean {selected_feature} for Malignant vs Benign Cases")
+st.pyplot(fig)
